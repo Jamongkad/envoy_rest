@@ -12,9 +12,14 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    if(Auth::check())
+        return 'Welcome back, ' . Auth::user()->username;//view('welcome');
+
+    return 'Hi Guest. ';
 });
 
 Route::get('/test', function () {
     return "MATHEW";
 });
+
+Route::get('login', 'AuthController@login');

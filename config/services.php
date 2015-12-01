@@ -35,4 +35,10 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'uber' => [
+        'client_id' => env('UBER_KEY'),
+        'client_secret' => env('UBER_SECRET'),
+        'redirect' => env('UBER_REDIRECT_URI'),  
+    ],
+
 ];

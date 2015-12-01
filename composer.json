@@ -7,7 +7,9 @@
     "require": {
         "php": ">=5.5.9",
         "laravel/framework": "5.1.*",
-        "socialiteproviders/uber": "^1.1"
+        "socialiteproviders/uber": "^1.1",
+        "laravel/socialite": "^2.0",
+        "stevenmaguire/oauth2-uber": "^0.2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
