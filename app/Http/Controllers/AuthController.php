@@ -7,33 +7,36 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Curl\Curl;
+use urmaul\url\Url;
 
 class AuthController extends Controller
 {
     //
-    public function login() {
+    public function login(Request $request) {
         $provider = new \Stevenmaguire\OAuth2\Client\Provider\Uber([
-            'clientId'          => env('UBER_KEY'),
-            'clientSecret'      => env('UBER_SECRET'),
+            'clientId'          => env('UBER_CLIENT_ID'),
+            'clientSecret'      => env('UBER_CLIENT_SECRET'),
             'redirectUri'       => env('UBER_REDIRECT_URI')
         ]);
 
-
-        $authUrl = $provider->getAuthorizationUrl();    
         if (!isset($_GET['code'])) {
+             
 
-            // If we don't have an authorization code then get one
-            $authUrl = $provider->getAuthorizationUrl();
-            $_SESSION['oauth2state'] = $provider->getState();
-            header('Location: '.$authUrl);
+            $authorizationUrl = "https://login.uber.com/oauth/v2/authorize";
+            $params = [ 
+                'response_type' => 'code',
+                'client_id' => env('UBER_CLIENT_ID'),
+                'scope' => 'profile request request_receipt delivery_sandbox history',
+                'redirect_uri' => env('UBER_REDIRECT_URI')
+            ];
+
+            $url = Url::from($authorizationUrl)->addParams($params);
+            header('Location: '.$url);
+
             exit;
 
         // Check given state against previously stored one to mitigate CSRF attack
-        } elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
-
-            unset($_SESSION['oauth2state']);
-            exit('Invalid state');
-
         } else {
 
             // Try to get an access token (using the authorization code grant)
@@ -48,7 +51,8 @@ class AuthController extends Controller
                 $user = $provider->getResourceOwner($token);
 
                 // Use these details to create a new profile
-                printf('Hello %s!', $user->getFirstname());
+                $request->session()->put('uber.token', $token->getToken());
+                $request->session()->put('uber.refresh_token', $token->getRefreshToken());
 
             } catch (Exception $e) {
 
@@ -58,7 +62,29 @@ class AuthController extends Controller
 
             // Use this to interact with an API on the users behalf
             echo $token->getToken();
+
         }
  
+    }
+    
+    public function test_token(Request $request) {
+
+        $bearerToken = $request->session()->get('uber.token');
+        $refreshToken = $request->session()->get('uber.refresh_token');
+        
+        echo "<pre>";
+        print_r($bearerToken);
+        echo "<br/>";
+        print_r($refreshToken);
+        /*
+
+        $curl = new \Curl\Curl();
+        $curl->setHeader('Authorization', 'Bearer ' . $bearerToken);
+        $curl->get('https://api.uber.com/v1/me');
+
+        $data = json_decode($curl->response);
+        dd($data);
+        */ 
+
     }
 }
