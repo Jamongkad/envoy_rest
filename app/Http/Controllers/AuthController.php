@@ -33,7 +33,6 @@ class AuthController extends Controller
 
             $url = Url::from($authorizationUrl)->addParams($params);
             header('Location: '.$url);
-
             exit;
 
         // Check given state against previously stored one to mitigate CSRF attack
@@ -72,19 +71,6 @@ class AuthController extends Controller
         $bearerToken = $request->session()->get('uber.token');
         $refreshToken = $request->session()->get('uber.refresh_token');
         
-        echo "<pre>";
-        print_r($bearerToken);
-        echo "<br/>";
-        print_r($refreshToken);
-        /*
-
-        $curl = new \Curl\Curl();
-        $curl->setHeader('Authorization', 'Bearer ' . $bearerToken);
-        $curl->get('https://api.uber.com/v1/me');
-
-        $data = json_decode($curl->response);
-        dd($data);
-        */ 
-
+        echo json_encode(['bearerToken' => $bearerToken, 'refreshToken' => $refreshToken]);
     }
 }
