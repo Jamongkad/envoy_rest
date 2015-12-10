@@ -68,9 +68,9 @@ class AuthController extends Controller
     
     public function test_token(Request $request) {
 
-        $bearerToken = $request->session()->get('uber.token');
-        $refreshToken = $request->session()->get('uber.refresh_token');
+        $bearerToken = $request->session()->pull('uber.token');
+        $refreshToken = $request->session()->pull('uber.refresh_token');
         
-        echo json_encode(['bearerToken' => $bearerToken, 'refreshToken' => $refreshToken]);
+        return \Response::json(['bearerToken' => $bearerToken, 'refreshToken' => $refreshToken]);
     }
 }
