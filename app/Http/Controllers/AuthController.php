@@ -24,9 +24,8 @@ class AuthController extends Controller
     }
 
     public function login(Request $request) {
-
+ 
         if (!isset($_GET['code'])) {
-             
 
             $authorizationUrl = "https://login.uber.com/oauth/v2/authorize";
             $params = [ 
@@ -80,7 +79,8 @@ class AuthController extends Controller
     }
 
     public function refresh_token(Request $request) {
-        $refreshToken = $request->input('r');
+        //$refreshToken = $request->input('r');
+        $refreshToken = $request->session()->pull('uber.refresh_token');
         $grant = new \League\OAuth2\Client\Grant\RefreshToken();  
         $token = $this->provider->getAccessToken($grant, ['refresh_token' => $refreshToken]);
 
@@ -95,8 +95,10 @@ class AuthController extends Controller
             'token' => $request->session()->pull('uber.token'),
         ];
         
-        $curl->get('https://login.uber.com/oauth/revoke', $params);
-        $data = json_decode($curl->response);
+        $curl->post('https://login.uber.com/oauth/revoke', $params);
+        /* 
+        $data = $curl->response;
         dd($data);
+        */
     }
 }
