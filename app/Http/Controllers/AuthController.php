@@ -86,4 +86,15 @@ class AuthController extends Controller
 
         return \Response::json($token);
     }
+
+    public function revoke(Request $request) {
+        $curl = new \Curl\Curl();
+        $params = [ 
+            'client_secret' => env('UBER_CLIENT_SECRET'),
+            'client_id' => env('UBER_CLIENT_ID'),
+            'token' => $request->session()->pull('uber.token');,
+        ];
+        
+        $curl->get('https://login.uber.com/oauth/revoke', $params);
+    }
 }

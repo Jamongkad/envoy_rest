@@ -22,6 +22,7 @@ Route::get('/test', function () {
 Route::get('login', 'AuthController@login');
 Route::get('test_token', 'AuthController@test_token');
 Route::get('refresh_token', 'AuthController@refresh_token');
+Route::get('revoke', 'AuthController@revoke');
 
 Route::get('get_products', 'UberController@get_products');
 Route::get('make_request', 'UberController@make_request');
