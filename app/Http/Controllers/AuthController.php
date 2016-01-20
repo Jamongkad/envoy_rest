@@ -92,7 +92,7 @@ class AuthController extends Controller
         $params = [ 
             'client_secret' => env('UBER_CLIENT_SECRET'),
             'client_id' => env('UBER_CLIENT_ID'),
-            'token' => $request->session()->pull('uber.token');,
+            'token' => $request->session()->pull('uber.token'),
         ];
         
         $curl->get('https://login.uber.com/oauth/revoke', $params);
