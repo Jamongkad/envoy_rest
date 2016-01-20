@@ -28,8 +28,7 @@ class UberController extends Controller
         ]);
 
         $data = json_decode($curl->response);
-
-        dd($data);
+        return \Response::json($data);
     }
 
     public function make_request(Request $request) {
