@@ -21,8 +21,8 @@ class UberController extends Controller
     public function get_products(Request $request) { 
 
         $curl = new \Curl\Curl();
-        $curl->setHeader('Authorization', 'Bearer ' . $this->bearerToken);
         $curl->get($this->sandbox_url.'v1/products', [
+           'server_token' => env('UBER_SERVER_TOKEN'),
            'latitude' => '14.554729',
            'longitude' => '121.024445'
         ]);
