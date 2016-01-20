@@ -96,5 +96,7 @@ class AuthController extends Controller
         ];
         
         $curl->get('https://login.uber.com/oauth/revoke', $params);
+        $data = json_decode($curl->response);
+        dd($data);
     }
 }
