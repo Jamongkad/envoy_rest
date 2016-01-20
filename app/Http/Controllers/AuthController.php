@@ -13,12 +13,17 @@ use urmaul\url\Url;
 class AuthController extends Controller
 {
     //
-    public function login(Request $request) {
-        $provider = new \Stevenmaguire\OAuth2\Client\Provider\Uber([
+    private $provider;
+
+    public function __construct() { 
+        $this->provider = new \Stevenmaguire\OAuth2\Client\Provider\Uber([
             'clientId'          => env('UBER_CLIENT_ID'),
             'clientSecret'      => env('UBER_CLIENT_SECRET'),
             'redirectUri'       => env('UBER_REDIRECT_URI')
         ]);
+    }
+
+    public function login(Request $request) {
 
         if (!isset($_GET['code'])) {
              
@@ -39,7 +44,7 @@ class AuthController extends Controller
         } else {
 
             // Try to get an access token (using the authorization code grant)
-            $token = $provider->getAccessToken('authorization_code', [
+            $token = $this->provider->getAccessToken('authorization_code', [
                 'code' => $_GET['code']
             ]);
 
@@ -47,7 +52,7 @@ class AuthController extends Controller
             try {
 
                 // We got an access token, let's now get the user's details
-                $user = $provider->getResourceOwner($token);
+                $user = $this->provider->getResourceOwner($token);
 
                 // Use these details to create a new profile
                 $request->session()->put('uber.token', $token->getToken());
@@ -60,8 +65,8 @@ class AuthController extends Controller
             }
 
             // Use this to interact with an API on the users behalf
-            echo $token->getToken();
-
+            //echo $token->getToken();
+            return view('success');
         }
  
     }
@@ -72,5 +77,13 @@ class AuthController extends Controller
         $refreshToken = $request->session()->pull('uber.refresh_token');
         
         return \Response::json(['bearerToken' => $bearerToken, 'refreshToken' => $refreshToken]);
+    }
+
+    public function refresh_token(Request $request) {
+        $refreshToken = $request->input('r');
+        $grant = new \League\OAuth2\Client\Grant\RefreshToken();  
+        $token = $this->provider->getAccessToken($grant, ['refresh_token' => $refreshToken]);
+
+        return \Response::json($token);
     }
 }
