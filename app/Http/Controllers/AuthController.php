@@ -72,15 +72,15 @@ class AuthController extends Controller
     
     public function test_token(Request $request) {
 
-        $bearerToken = $request->session()->pull('uber.token');
-        $refreshToken = $request->session()->pull('uber.refresh_token');
+        $bearerToken = $request->session()->get('uber.token');
+        $refreshToken = $request->session()->get('uber.refresh_token');
         
         return \Response::json(['bearerToken' => $bearerToken, 'refreshToken' => $refreshToken]);
     }
 
     public function refresh_token(Request $request) {
         //$refreshToken = $request->input('r');
-        $refreshToken = $request->session()->pull('uber.refresh_token');
+        $refreshToken = $request->session()->get('uber.refresh_token');
         $grant = new \League\OAuth2\Client\Grant\RefreshToken();  
         $token = $this->provider->getAccessToken($grant, ['refresh_token' => $refreshToken]);
 
@@ -92,7 +92,7 @@ class AuthController extends Controller
         $params = [ 
             'client_secret' => env('UBER_CLIENT_SECRET'),
             'client_id' => env('UBER_CLIENT_ID'),
-            'token' => $request->session()->pull('uber.token'),
+            'token' => $request->session()->get('uber.token'),
         ];
         
         $curl->post('https://login.uber.com/oauth/revoke', $params);
