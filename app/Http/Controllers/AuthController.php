@@ -31,7 +31,7 @@ class AuthController extends Controller
             $params = [ 
                 'response_type' => 'code',
                 'client_id' => env('UBER_CLIENT_ID'),
-                'scope' => 'profile request request_receipt delivery_sandbox history',
+                'scope' => 'profile history_lite history',
                 'redirect_uri' => env('UBER_REDIRECT_URI')
             ];
 
