@@ -20,11 +20,14 @@ class UberController extends Controller
 
     public function get_products(Request $request) { 
 
+        $latitude  = $request->input('latitude');
+        $longitude =  $request->input('longitude');
+
         $curl = new \Curl\Curl();
         $curl->get($this->sandbox_url.'v1/products', [
            'server_token' => env('UBER_SERVER_TOKEN'),
-           'latitude' => '14.554729',
-           'longitude' => '121.024445'
+           'latitude' => $latitude,
+           'longitude' => $longitude
         ]);
 
         $data = json_decode($curl->response);
