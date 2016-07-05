@@ -21,7 +21,7 @@ class UberController extends Controller
     public function get_products(Request $request) { 
 
         $latitude  = $request->input('latitude');
-        $longitude =  $request->input('longitude');
+        $longitude = $request->input('longitude');
 
         $curl = new \Curl\Curl();
         $curl->get($this->sandbox_url.'v1/products', [
@@ -30,6 +30,54 @@ class UberController extends Controller
            'longitude' => $longitude
         ]);
 
+        $data = json_decode($curl->response);
+        return \Response::json($data);
+    }
+
+    public function get_price_estimates(Request $request) {
+        $start_latitude   = $request->input('start_latitude');
+        $start_longitude  = $request->input('start_longitude');
+        $end_latitude     = $request->input('end_latitude');
+        $end_longitude    = $request->input('end_longitude');
+        
+        $curl = new \Curl\Curl();
+        $params = [ 
+           'server_token'    => env('UBER_SERVER_TOKEN'),
+           'start_latitude'  => $start_latitude,
+           'start_longitude' => $start_longitude,
+           'end_latitude'    => $end_latitude,
+           'end_longitude'   => $end_longitude,
+        ];
+
+        $curl->get($this->sandbox_url.'v1/estimates/price', $params);
+        $data = json_decode($curl->response);
+        return \Response::json($data); 
+    }
+
+    public function get_time_estimates(Request $request) { 
+        $latitude   = $request->input('latitude');
+        $longitude  = $request->input('longitude');
+        $product_id = $request->input('product_id');
+
+        $curl = new \Curl\Curl();
+
+        $params = []; 
+        if($product_id) { 
+            $params = [ 
+               'server_token' => env('UBER_SERVER_TOKEN'),
+               'start_latitude' => $latitude,
+               'start_longitude' => $longitude,
+               'product_id' => $product_id
+            ];
+        } else {
+            $params = [
+               'server_token' => env('UBER_SERVER_TOKEN'),
+               'start_latitude' => $latitude,
+               'start_longitude' => $longitude
+            ];
+        }
+
+        $curl->get($this->sandbox_url.'v1/estimates/time', $params);
         $data = json_decode($curl->response);
         return \Response::json($data);
     }

@@ -13,5 +13,7 @@ class VerifyCsrfToken extends BaseVerifier
      */
     protected $except = [
         //
+        '/get_price_estimates',
+        '/get_time_estimates',
     ];
 }
